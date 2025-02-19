@@ -1,0 +1,8 @@
+{
+  "name": "receipt-app-blank",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "ae8ec445"
+}
