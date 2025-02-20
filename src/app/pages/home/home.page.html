@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    Tap the button in the toolbar to open the menu.
+
+  </ion-content>
+
+<ion-tab-bar slot="bottom">
+    <ion-tab-button (click)="gotoHome()">
+      <ion-icon name="person-circle-outline"></ion-icon>
+     User page
+    </ion-tab-button>
+    <ion-tab-button (click)="gotoUpload()">
+    <ion-icon name="camera-outline"></ion-icon>
+            Add receipt
+    </ion-tab-button>
+    <ion-tab-button (click)="gotoGallery()">
+      <ion-icon name="images-outline"></ion-icon>
+      Gallery
+    </ion-tab-button>
+    <ion-tab-button (click)="gotoReciptList()">
+      <ion-icon name="receipt-outline"></ion-icon>
+            My receipt
+    </ion-tab-button>
+</ion-tab-bar>
+
+

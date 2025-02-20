@@ -1,0 +1,31 @@
+ion-title {
+  text-align: center;
+}
+
+/* ion-header {
+  margin-top: 20px;
+} */
+
+.containerPhoto {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  width: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+}
+
+.containerBox {
+  margin-top: 5px;
+}
+
+ion-col {
+  text-align: center;
+}
+
+.centerBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
