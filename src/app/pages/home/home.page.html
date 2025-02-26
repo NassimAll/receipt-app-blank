@@ -5,7 +5,18 @@
   </ion-header>
   <ion-content class="ion-padding">
     Tap the button in the toolbar to open the menu.
-
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>User Information</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Username: {{ user?.username }}</p>
+        <p>name: {{ user?.name }}</p>
+        <p>surname: {{ user?.surname }}</p>
+        <!-- Aggiungi altre informazioni se necessarie -->
+         <ion-button (click)="logout()"  shape="round" color="danger"> Log-out</ion-button>
+      </ion-card-content>
+    </ion-card>
   </ion-content>
 
 <ion-tab-bar slot="bottom">
@@ -16,10 +27,6 @@
     <ion-tab-button (click)="gotoUpload()">
     <ion-icon name="camera-outline"></ion-icon>
             Add receipt
-    </ion-tab-button>
-    <ion-tab-button (click)="gotoGallery()">
-      <ion-icon name="images-outline"></ion-icon>
-      Gallery
     </ion-tab-button>
     <ion-tab-button (click)="gotoReciptList()">
       <ion-icon name="receipt-outline"></ion-icon>

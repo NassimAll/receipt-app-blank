@@ -1,59 +1,60 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotoService {
-
-  constructor() { }
-
-  public photos: UserPhoto[] = [];
   private PHOTO_STORAGE: string = 'photos';
+  private apiUrl: string = 'http://192.168.1.71:3000/api/v1/receipt/upload';  // URL API
 
-  public async takePhoto(){ //FUnzione per le foto scattate al momento
-      const photo: Photo = await Camera.getPhoto({
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Camera,
-        quality: 100
-      });
+  constructor(private http: HttpClient, private authService: AuthService ) {}
 
-      // Save the picture and add it to photo collection
-      const savedImageFile = await this.savePicture(photo);
-      this.photos.unshift(savedImageFile);
+  public async takePhoto() {
+    const photo: Photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Camera,
+      quality: 100
+    });
 
-      Preferences.set({
-        key: this.PHOTO_STORAGE,
-        value: JSON.stringify(this.photos),
-      });
+    return await this.savePicture(photo);
   }
-  private async savePicture(photo: Photo) {
-    // Convert photo to base64 format, required by Filesystem API to save
-    const base64Data = await this.readAsBase64(photo);
 
-    // Write the file to the data directory
+   // Seleziona una foto dalla galleria
+   public async pickPhoto() {
+    const photo: Photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos, // Usa la galleria invece della fotocamera
+      quality: 100,
+    });
+
+    return await this.savePicture(photo);
+  }
+
+  private async savePicture(photo: Photo) {
+    const base64Data = await this.readAsBase64(photo);
     const fileName = Date.now() + '.jpeg';
-    const savedFile = await Filesystem.writeFile({
+
+    await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
       directory: Directory.Data
     });
 
-    // Use webPath to display the new image instead of base64 since it's
-    // already loaded into memory
     return {
       filepath: fileName,
-      webviewPath: photo.webPath
+      webviewPath: photo.webPath,
+      base64Data: base64Data  // Aggiungiamo il Base64 per inviarlo al server
     };
   }
 
   private async readAsBase64(photo: Photo) {
-    // Fetch the photo, read as a blob, then convert to base64 format
     const response = await fetch(photo.webPath!);
     const blob = await response.blob();
-
     return await this.convertBlobToBase64(blob) as string;
   }
 
@@ -61,56 +62,40 @@ export class PhotoService {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-        resolve(reader.result);
+      resolve(reader.result);
     };
     reader.readAsDataURL(blob);
   });
 
-  public async pickPhoto(): Promise<string | null> {
-    try {
-      const photo: Photo = await Camera.getPhoto({
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Photos,
-        quality: 100
-      });
+  public async uploadPhoto(photo: UserPhoto) {
+    const formData = new FormData();
+    const imageBlob = this.dataURItoBlob(photo.base64Data);
+    const token = await this.authService.getToken();
+    console.log(token);
+    
+    formData.append('receipt', imageBlob, photo.filepath);
 
-      // Save the picture and add it to photo collection
-      const savedImageFile = await this.savePicture(photo);
-      this.photos.unshift(savedImageFile);
-
-      Preferences.set({
-        key: this.PHOTO_STORAGE,
-        value: JSON.stringify(this.photos),
-      });
-
-      return `data:image/jpeg;base64,${photo.base64String}`;
-    } catch (error) {
-      console.error("Errore nel caricamento della galleria:", error);
-      return null;
-    }
+    return this.http.post(this.apiUrl, formData, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).toPromise();
   }
 
-  public async loadSaved() {
-    // Retrieve cached photo array data
-    const { value } = await Preferences.get({ key: this.PHOTO_STORAGE });
-    this.photos = (value ? JSON.parse(value) : []) as UserPhoto[];
+  private dataURItoBlob(dataURI: string) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const arrayBuffer = new ArrayBuffer(byteString.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
 
-    // Display the photo by reading into base64 format
-    for (let photo of this.photos) {
-      // Read each saved photo's data from the Filesystem
-      const readFile = await Filesystem.readFile({
-        path: photo.filepath,
-        directory: Directory.Data,
-      });
-
-      // Web platform only: Load the photo as base64 data
-      photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
     }
-  }
 
+    return new Blob([arrayBuffer], { type: mimeString });
+  }
 }
 
 export interface UserPhoto {
   filepath: string;
   webviewPath?: string;
+  base64Data: string;  // Aggiunto per l'invio al server
 }

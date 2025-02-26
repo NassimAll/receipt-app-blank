@@ -26,16 +26,7 @@ const routes: Routes = [
     path: 'upload-receipt',
     loadChildren: () => import('./pages/upload-receipt/upload-receipt.module').then( m => m.UploadReceiptPageModule),
     canActivate: [AuthGuard]  // Protezione delle Tabs
-  },
-  {
-    path: 'gallery',
-    loadChildren: () => import('./pages/gallery/gallery.module').then( m => m.GalleryPageModule),
-    canActivate: [AuthGuard]  // Protezione delle Tabs
   }
-
-
-
-
 
 ];
 

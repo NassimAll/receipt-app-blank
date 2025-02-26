@@ -50,36 +50,27 @@ export class LoginPage{
     }
   }
 
-  /* async openLoginPage() {
+   async signUp() {
 
-    const authUrl = 'http://192.168.1.71:3000/login';
-   //const authUrl = 'http://127.0.0.1:3000/login';
+    const signUpUrl = 'http://192.168.1.71:3000/signup';
 
     // Open the in-app browser
-    await Browser.open({ url: authUrl });
+    await Browser.open({ url: signUpUrl });
 
-    // Add listener for appUrlOpen event
-    App.addListener('appUrlOpen', (event) => {
-      console.log('appUrlOpen event triggered:', event.url); // Debugging
-
-      if (event.url.startsWith('receiptapp://home')) {
-        const url = new URL(event.url);
-        const token = url.searchParams.get('token');
-        console.log('Token received:', token); // Debugging
-
-        if (token) {
-          localStorage.setItem('jwt', token);
-          console.log('Token stored in localStorage:', token); // Debugging
-          Browser.close();
-          this.router.navigate(['/home']);
-        }
+    console.log('Browser aperto per la registrazione'); // Debugging
 
 
-      }
-    });
+    // Listener per intercettare quando l'utente torna all'app
+  App.addListener('appStateChange', async (state) => {
+    if (state.isActive) {
+      console.log('L\'app è tornata attiva'); // Debugging
 
-    console.log('Listener registered'); // Debugging
+      Browser.close();
+    }
+  });
+
+    console.log('Successfully registered'); // Debugging
   }
- */
+
 
 }

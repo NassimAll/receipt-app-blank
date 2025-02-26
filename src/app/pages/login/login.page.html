@@ -7,7 +7,7 @@
       <ion-row>
         <ion-col></ion-col>
         <ion-col size="auto">
-        <ion-input labelPlacement="floating" placeholder="Username" [(ngModel)]="username">
+        <ion-input  fill="outline"  labelPlacement="floating" placeholder="Username" [(ngModel)]="username">
           <div slot="label">Username <ion-text color="danger">(Required)</ion-text></div>
         </ion-input>
       </ion-col>
@@ -16,7 +16,7 @@
       <ion-row>
         <ion-col></ion-col>
         <ion-col size="auto">
-        <ion-input type="password" labelPlacement="floating"  placeholder="password" [(ngModel)]="password">
+        <ion-input  fill="outline"  type="password" labelPlacement="floating"  placeholder="password" [(ngModel)]="password">
           <div slot="label">Password <ion-text color="danger">(Required)</ion-text></div>
         </ion-input>
       </ion-col>
@@ -26,7 +26,16 @@
         <ion-col></ion-col>
         <ion-col size="auto">
         <ion-button shape="round" fill="outline" color="light" color="primary" (click)="login()">
-          Accedi con il Browser
+          Accedi
+        </ion-button>
+      </ion-col>
+      <ion-col></ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col></ion-col>
+        <ion-col size="auto">
+        <ion-button shape="round" fill="outline" color="light" color="primary" (click)="signUp()">
+          Registrati qui
         </ion-button>
       </ion-col>
       <ion-col></ion-col>
